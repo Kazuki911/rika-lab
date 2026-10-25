@@ -29,6 +29,10 @@ case'massBalance':return[m('容器内の質量',p.before-p.gas*p.escape/100,'g')
 case'ion':return[m('電荷（陽子1個を+1）',p.protons-p.electrons,''),m('状態',p.protons===p.electrons?'中性':p.protons>p.electrons?'陽イオン':'陰イオン'),m('陽子数',p.protons,'個')];
 case'ph':return[m('H⁺の濃度指数',-p.ph,'10の指数'),m('H⁺の濃度',(10**(-p.ph)).toExponential(2),'mol/L'),m('性質',p.ph===7?'中性':p.ph<7?'酸性':'アルカリ性')];
 case'neutral':return[m('反応した組の量',Math.min(p.acid,p.base),'相対単位'),m('余ったH⁺',Math.max(0,p.acid-p.base),'相対単位'),m('余ったOH⁻',Math.max(0,p.base-p.acid),'相対単位')];
+case'microscope':return[m('総合倍率',p.objective*p.eyepiece,'倍'),m('視野直径',18/p.objective,'mm'),m('対物倍率',p.objective,'倍')];
+case'transpiration':return[m('蒸散量',p.area*p.rate*p.hours,'g'),m('1時間の量',p.area*p.rate,'g/h'),m('面積あたり',p.rate*p.hours,'g/cm²')];
+case'cardiac':return[m('1分の拍出量',p.rate*p.stroke/1000,'L/分'),m('1時間の延べ量',p.rate*p.stroke*60/1000,'L'),m('心拍数',p.rate,'回/分')];
+case'division':return[m('細胞数',p.initial*2**p.rounds,'個'),m('増加倍率',2**p.rounds,'倍'),m('増えた細胞数',p.initial*(2**p.rounds-1),'個')];
 default:throw new Error('未定義のモデル: '+key);
 }}
 export function modelSeries(model,p){if(model.key==='ac'){return {xLabel:'時間 (ms)',yLabel:'電圧 (V)',points:Array.from({length:121},(_,i)=>[i/120*100,p.amplitude*Math.sin(2*Math.PI*p.frequency*i/120*.1)])};}let [key,label,lo,hi,step]=model.controls[0];const first=compute(model.key,p)[0];return{xLabel:label+' ('+model.controls[0][6]+')',yLabel:first.label+' ('+first.unit+')',points:Array.from({length:61},(_,i)=>{let x=Math.min(hi,lo+Math.round((hi-lo)*i/60/step)*step);let result=compute(model.key,{...p,[key]:x})[0].value;return[x,typeof result==='number'&&Number.isFinite(result)?result:null]})};}
