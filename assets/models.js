@@ -20,6 +20,7 @@ case'mixHeat':return[m('混合温度',p.hot*p.ratio/100+p.cold*(1-p.ratio/100),'
 case'efficiency':return[m('有用な出力',p.input*p.efficiency/100,'J'),m('その他の出力',p.input*(1-p.efficiency/100),'J'),m('入力',p.input,'J')];
 case'recycle':return[m('再生量',p.mass*p.collect*p.yield/10000,'kg'),m('回収量',p.mass*p.collect/100,'kg'),m('全体の再生率',p.collect*p.yield/100,'%')];
 case'decay':return[m('残存割合',100*2**(-p.time/p.halflife),'%'),m('経過した半減期',p.time/p.halflife,'回'),m('変化した割合',100*(1-2**(-p.time/p.halflife)),'%')];
+case'density':return[m('密度',p.mass/p.volume,'g/cm³'),m('水との比較',p.mass/p.volume>1?'大きい':p.mass/p.volume<1?'小さい':'等しい'),m('質量',p.mass,'g')];
 default:throw new Error('未定義のモデル: '+key);
 }}
 export function modelSeries(model,p){if(model.key==='ac'){return {xLabel:'時間 (ms)',yLabel:'電圧 (V)',points:Array.from({length:121},(_,i)=>[i/120*100,p.amplitude*Math.sin(2*Math.PI*p.frequency*i/120*.1)])};}let [key,label,lo,hi]=model.controls[0];const first=compute(model.key,p)[0];return{xLabel:label+' ('+model.controls[0][6]+')',yLabel:first.label+' ('+first.unit+')',points:Array.from({length:61},(_,i)=>{let x=lo+(hi-lo)*i/60;let result=compute(model.key,{...p,[key]:x})[0].value;return[x,typeof result==='number'&&Number.isFinite(result)?result:null]})};}
