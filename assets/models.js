@@ -33,6 +33,10 @@ case'microscope':return[m('総合倍率',p.objective*p.eyepiece,'倍'),m('視野
 case'transpiration':return[m('蒸散量',p.area*p.rate*p.hours,'g'),m('1時間の量',p.area*p.rate,'g/h'),m('面積あたり',p.rate*p.hours,'g/cm²')];
 case'cardiac':return[m('1分の拍出量',p.rate*p.stroke/1000,'L/分'),m('1時間の延べ量',p.rate*p.stroke*60/1000,'L'),m('心拍数',p.rate,'回/分')];
 case'division':return[m('細胞数',p.initial*2**p.rounds,'個'),m('増加倍率',2**p.rounds,'倍'),m('増えた細胞数',p.initial*(2**p.rounds-1),'個')];
+case'inherit':{let a=p.a/100,b=p.b/100;return[m('顕性形質の割合',(1-(1-a)*(1-b))*100,'%'),m('AAの割合',a*b*100,'%'),m('aaの割合',(1-a)*(1-b)*100,'%')];}
+case'quake':return[m('初期微動継続時間',p.distance/p.s-p.distance/p.p,'s'),m('P波到着',p.distance/p.p,'s'),m('S波到着',p.distance/p.s,'s')];
+case'pressure':return[m('片面に働く力',p.pressure*p.area*.01,'N'),m('圧力',p.pressure*100,'Pa'),m('面積',p.area/10000,'m²')];
+case'dew':{let water=sat(p.temp)*p.rh/100;return[m('凝結量',Math.max(0,water-sat(p.cool)),'g/m³'),m('初期水蒸気量',water,'g/m³'),m('冷却後の湿度',Math.min(100,water/sat(p.cool)*100),'%')];}
 default:throw new Error('未定義のモデル: '+key);
 }}
 export function modelSeries(model,p){if(model.key==='ac'){return {xLabel:'時間 (ms)',yLabel:'電圧 (V)',points:Array.from({length:121},(_,i)=>[i/120*100,p.amplitude*Math.sin(2*Math.PI*p.frequency*i/120*.1)])};}let [key,label,lo,hi,step]=model.controls[0];const first=compute(model.key,p)[0];return{xLabel:label+' ('+model.controls[0][6]+')',yLabel:first.label+' ('+first.unit+')',points:Array.from({length:61},(_,i)=>{let x=Math.min(hi,lo+Math.round((hi-lo)*i/60/step)*step);let result=compute(model.key,{...p,[key]:x})[0].value;return[x,typeof result==='number'&&Number.isFinite(result)?result:null]})};}
