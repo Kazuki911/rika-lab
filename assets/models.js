@@ -45,6 +45,14 @@ case'food-energy':return[m('到達エネルギー',p.input*(p.transfer/100)**p.l
 case'quadrat':return[m('推定個体数',p.count/p.sample*p.total,'個体'),m('観察密度',p.count/p.sample,'個体/m²'),m('調査面積の割合',p.sample/p.total*100,'%')];
 case'measurement':return[m('相対的な幅',p.width/p.value*100,'%'),m('下限',p.value-p.width,'mm'),m('上限',p.value+p.width,'mm')];
 case'linear':return[m('縦軸y',p.slope*p.x+p.intercept,''),m('傾き',p.slope,''),m('切片',p.intercept,'')];
+case'networks':return[m('直列の全電流',p.voltage/(p.r1+p.r2),'A'),m('並列の全電流',p.voltage*(1/p.r1+1/p.r2),'A'),m('並列の合成抵抗',p.r1*p.r2/(p.r1+p.r2),'Ω')];
+case'hydrostatic':return[m('圧力の増分',p.density*9.8*p.depth,'Pa'),m('面に働く力の増分',p.density*9.8*p.depth*p.area/10000,'N'),m('深さ',p.depth,'m')];
+case'crystal':return[m('析出する量',p.water*(p.hot-p.cold)/100,'g'),m('母液に残る溶質',p.water*p.cold/100,'g'),m('回収率',(p.hot-p.cold)/p.hot*100,'%')];
+case'electrolysis':return[m('水素分子',p.water,'個'),m('酸素分子',p.water/2,'個'),m('水素原子の合計',p.water*2,'個')];
+case'battery-life':return[m('使用時間',p.energy*p.efficiency/100/p.power,'h'),m('利用可能電力量',p.energy*p.efficiency/100,'Wh'),m('変換前エネルギー',p.energy*3600,'J')];
+case'lever':return[m('必要な力',p.load*p.loadArm/p.effortArm,'N'),m('荷重側の力のモーメント',p.load*p.loadArm,'N·m'),m('力点側/作用点側の腕',p.effortArm/p.loadArm,'倍')];
+case'stock':return[m('貯蔵量',200+(p.input-p.output)*p.years,'単位'),m('年間の変化',p.input-p.output,'単位/年'),m('初期からの変化',(p.input-p.output)*p.years,'単位')];
+case'sampling':return[m('割合の標準偏差',Math.sqrt((p.prob/100)*(1-p.prob/100)/p.n)*100,'ポイント'),m('期待該当数',p.n*p.prob/100,'個'),m('標本数',p.n,'個')];
 default:throw new Error('未定義のモデル: '+key);
 }}
 export function modelSeries(model,p){if(model.key==='ac'){return {xLabel:'時間 (ms)',yLabel:'電圧 (V)',points:Array.from({length:121},(_,i)=>[i/120*100,p.amplitude*Math.sin(2*Math.PI*p.frequency*i/120*.1)])};}let [key,label,lo,hi,step]=model.controls[0];const first=compute(model.key,p)[0];return{xLabel:label+' ('+model.controls[0][6]+')',yLabel:first.label+' ('+first.unit+')',points:Array.from({length:61},(_,i)=>{let x=Math.min(hi,lo+Math.round((hi-lo)*i/60/step)*step);let result=compute(model.key,{...p,[key]:x})[0].value;return[x,typeof result==='number'&&Number.isFinite(result)?result:null]})};}
