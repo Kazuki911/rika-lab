@@ -37,6 +37,14 @@ case'inherit':{let a=p.a/100,b=p.b/100;return[m('顕性形質の割合',(1-(1-a)
 case'quake':return[m('初期微動継続時間',p.distance/p.s-p.distance/p.p,'s'),m('P波到着',p.distance/p.p,'s'),m('S波到着',p.distance/p.s,'s')];
 case'pressure':return[m('片面に働く力',p.pressure*p.area*.01,'N'),m('圧力',p.pressure*100,'Pa'),m('面積',p.area/10000,'m²')];
 case'dew':{let water=sat(p.temp)*p.rh/100;return[m('凝結量',Math.max(0,water-sat(p.cool)),'g/m³'),m('初期水蒸気量',water,'g/m³'),m('冷却後の湿度',Math.min(100,water/sat(p.cool)*100),'%')];}
+case'rotation':return[m('回転角',15*p.hours,'°'),m('回転した割合',p.hours/24*100,'%'),m('経過時間',p.hours,'h')];
+case'sunheight':return[m('南中高度',90-p.latitude+p.declination,'°'),m('天頂からの角度',p.latitude-p.declination,'°'),m('赤緯',p.declination,'°')];
+case'phase':return[m('照らされた割合',(1+Math.cos(p.angle*Math.PI/180))*50,'%'),m('暗い側の割合',(1-Math.cos(p.angle*Math.PI/180))*50,'%'),m('位相角',p.angle,'°')];
+case'lighttime':return[m('光行時間',p.distance*499/60,'分'),m('光行時間（秒）',p.distance*499,'s'),m('距離',p.distance*149597870.7,'km')];
+case'food-energy':return[m('到達エネルギー',p.input*(p.transfer/100)**p.levels,'kJ'),m('出発量に対する割合',100*(p.transfer/100)**p.levels,'%'),m('段階数',p.levels,'段階')];
+case'quadrat':return[m('推定個体数',p.count/p.sample*p.total,'個体'),m('観察密度',p.count/p.sample,'個体/m²'),m('調査面積の割合',p.sample/p.total*100,'%')];
+case'measurement':return[m('相対的な幅',p.width/p.value*100,'%'),m('下限',p.value-p.width,'mm'),m('上限',p.value+p.width,'mm')];
+case'linear':return[m('縦軸y',p.slope*p.x+p.intercept,''),m('傾き',p.slope,''),m('切片',p.intercept,'')];
 default:throw new Error('未定義のモデル: '+key);
 }}
 export function modelSeries(model,p){if(model.key==='ac'){return {xLabel:'時間 (ms)',yLabel:'電圧 (V)',points:Array.from({length:121},(_,i)=>[i/120*100,p.amplitude*Math.sin(2*Math.PI*p.frequency*i/120*.1)])};}let [key,label,lo,hi,step]=model.controls[0];const first=compute(model.key,p)[0];return{xLabel:label+' ('+model.controls[0][6]+')',yLabel:first.label+' ('+first.unit+')',points:Array.from({length:61},(_,i)=>{let x=Math.min(hi,lo+Math.round((hi-lo)*i/60/step)*step);let result=compute(model.key,{...p,[key]:x})[0].value;return[x,typeof result==='number'&&Number.isFinite(result)?result:null]})};}
