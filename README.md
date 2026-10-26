@@ -2,7 +2,7 @@
 
 公開サイト： https://kazuki911.github.io/rika-lab/
 
-中学校理科の学習指導要領を対応表に整理し、モデル操作・対応付け・資料読解・考察・探究ワークシートを掲載します。50活動ずつ追加して公開します。現在の公開対象数は `data/catalog.json` の `release`、単元別の状況は [対応表](docs/CURRICULUM.md) を参照してください。
+中学校理科の学習指導要領を対応表に整理し、モデル操作・対応付け・資料読解・考察・探究ワークシートを掲載します。50活動ずつ追加して公開します。現在は360教材（70テーマ×5活動と既存10シミュレーション）です。現在の公開対象数は `data/catalog.json` の `release`、単元別の状況は [対応表](docs/CURRICULUM.md) を参照してください。
 
 ## 使い方
 
@@ -17,7 +17,7 @@
 - `data/catalog.json`：教材目録
 - `data/{physics,chemistry,biology,earth,skills}.json`：分野別の教材データ（利用時に読み込み）
 - `simulation.html` / `assets/app.js`：既存10シミュレーション
-- `scripts/build_content.py`：独自制作した教材内容と段階公開用ビルダー
+- `scripts/build_content.py` / `scripts/content_more.py`：独自制作した教材内容と段階公開用ビルダー
 - `docs/CURRICULUM.md`：学習指導要領との対応
 - `docs/DESIGN.md`：HIGの適用方針
 
@@ -25,6 +25,7 @@
 
 ```sh
 python3 -m http.server 8000 --bind 127.0.0.1
+python3 scripts/build_content.py --topics 70
 node tests/verify.cjs
 node tests/library.mjs
 ```
